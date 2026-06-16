@@ -1,0 +1,604 @@
+
+
+<!-- BG -->
+<div class="bg-grid"></div>
+<div class="bg-glow1"></div>
+<div class="bg-glow2"></div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span id="toastMsg"></span></div>
+
+<!-- PROFILE SETUP MODAL (shown after first login) -->
+<div class="overlay" id="profileModal">
+  <div class="modal" style="max-width:460px;">
+    <div class="modal-title">👤 <span data-vi>Thiết lập hồ sơ của bạn</span><span data-en>Set up your profile</span><span data-ja>プロフィール設定</span><span data-ko>프로필 설정</span><span data-zh>设置您的个人资料</span><span data-es>Configura tu perfil</span></div>
+    <p class="modal-sub"><span data-vi>Bắt buộc hoàn thành để tham gia airdrop và chống gian lận.</span><span data-en>Required to join airdrop and prevent fraud.</span><span data-ja>エアドロップ参加と不正防止のために必須です。</span><span data-ko>에어드롭 참여 및 사기 방지를 위해 필수입니다.</span><span data-zh>参与空投和防止欺诈的必要步骤。</span><span data-es>Requerido para unirse al airdrop y prevenir fraude.</span></p>
+
+    <!-- Avatar + Username -->
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;">
+      <div id="profileAvatarPreview" style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#7C3AED,#06B6D4);display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;flex-shrink:0;" onclick="document.getElementById('avatarInput').click()">😀</div>
+      <div style="flex:1;">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px;" data-vi>Bấm vào avatar để thay đổi</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px;" data-en>Click avatar to change</div>
+        <input id="avatarInput" type="file" accept="image/*" style="display:none;" onchange="previewAvatar(this)">
+        <input id="profileUsername" placeholder="Username (vd: @streamfi_fan)" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:13px;outline:none;" oninput="checkUsername(this)">
+        <div id="usernameStatus" style="font-size:10px;margin-top:3px;"></div>
+      </div>
+    </div>
+
+    <!-- Social links (required for Web3 wallet users) -->
+    <div id="socialLinksSection">
+      <div style="font-size:12px;font-weight:600;margin-bottom:8px;color:var(--text);">
+        <span data-vi>🔗 Liên kết mạng xã hội</span><span data-en>🔗 Social Media Links</span><span data-ja>🔗 SNSリンク</span><span data-ko>🔗 소셜 미디어 링크</span><span data-zh>🔗 社交媒体链接</span><span data-es>🔗 Redes Sociales</span>
+        <span id="socialRequired" style="color:var(--red);font-size:10px;margin-left:6px;" data-vi>(Bắt buộc ít nhất 1 cho ví Web3)</span><span id="socialRequired2" style="color:var(--muted);font-size:10px;margin-left:6px;" data-en>(At least 1 required for Web3 wallet)</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="width:28px;text-align:center;">𝕏</span>
+          <input id="profileTwitter" placeholder="@twitter_handle" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:12px;outline:none;">
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="width:28px;text-align:center;">⚔</span>
+          <input id="profileDiscord" placeholder="Discord#0001" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:12px;outline:none;">
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="width:28px;text-align:center;">♪</span>
+          <input id="profileTiktok" placeholder="@tiktok_handle" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:12px;outline:none;">
+        </div>
+      </div>
+    </div>
+
+    <!-- Wallet info (real Privy embedded wallet) -->
+    <div id="walletInfoSection" style="margin-top:14px;background:var(--bg2);border:1px solid rgba(124,58,237,0.2);border-radius:10px;padding:14px;">
+      <div style="font-size:12px;font-weight:600;margin-bottom:8px;">
+        🔐 <span data-vi>Thông tin ví Web3 của bạn</span><span data-en>Your Web3 Wallet Info</span><span data-ja>Web3ウォレット情報</span><span data-ko>Web3 지갑 정보</span><span data-zh>您的Web3钱包信息</span><span data-es>Info de tu cartera Web3</span>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px;" data-vi>Ví này được Privy tự động tạo và gắn với tài khoản của bạn (bảo mật bằng Shamir Secret Sharing + TEE). Bạn có thể xuất ví (export) để quản lý độc lập trong MetaMask nếu muốn.</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px;" data-en>This wallet is auto-created by Privy and linked to your account (secured via Shamir Secret Sharing + TEE). You can export it to manage independently in MetaMask if you want.</div>
+      <div style="background:var(--bg);border-radius:6px;padding:8px 10px;font-family:'Space Mono',monospace;font-size:10px;color:var(--text);word-break:break-all;margin-bottom:6px;">
+        <span style="color:var(--muted);">Address: </span><span id="profileWalletAddr"></span>
+      </div>
+      <div style="font-size:10px;color:var(--muted);margin-top:6px;" data-vi>⚠️ Đây là ví Base Sepolia Testnet — chỉ dùng cho token thử nghiệm, không có giá trị thật.</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:6px;" data-en>⚠️ This is a Base Sepolia Testnet wallet — for test tokens only, no real value.</div>
+      <button onclick="exportPrivyWallet()" style="margin-top:8px;width:100%;background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);color:#A78BFA;border-radius:6px;padding:6px;font-size:11px;cursor:pointer;font-family:'Space Grotesk',sans-serif;">
+        🔑 <span data-vi>Xuất ví (Export Wallet)</span><span data-en>Export Wallet</span>
+      </button>
+    </div>
+
+    <!-- Anti-bot checkbox -->
+    <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;margin:14px 0;font-size:12px;color:var(--muted);">
+      <input type="checkbox" id="antiBotCheck" style="margin-top:2px;width:15px;height:15px;cursor:pointer;accent-color:var(--accent);flex-shrink:0;">
+      <span data-vi>Tôi xác nhận đây là tài khoản duy nhất của tôi. Tôi không tạo nhiều tài khoản để gian lận airdrop.</span>
+      <span data-en>I confirm this is my only account. I will not create multiple accounts to cheat the airdrop.</span>
+      <span data-ja>これが私の唯一のアカウントであることを確認します。不正行為はしません。</span>
+      <span data-ko>이것이 나의 유일한 계정임을 확인합니다. 에어드롭 사기를 위해 여러 계정을 만들지 않겠습니다.</span>
+      <span data-zh>我确认这是我唯一的账户。我不会创建多个账户来欺骗空投。</span>
+      <span data-es>Confirmo que esta es mi única cuenta. No crearé múltiples cuentas para hacer trampa en el airdrop.</span>
+    </label>
+
+    <button id="saveProfileBtn" onclick="saveProfile()" style="width:100%;background:linear-gradient(135deg,#7C3AED,#5B21B6);color:#fff;border:none;padding:13px;border-radius:10px;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;">
+      <span data-vi>✅ Lưu hồ sơ & Vào StreamFi</span><span data-en>✅ Save Profile & Enter StreamFi</span><span data-ja>✅ プロフィール保存 & 入場</span><span data-ko>✅ 프로필 저장 & 입장</span><span data-zh>✅ 保存资料并进入StreamFi</span><span data-es>✅ Guardar perfil y entrar</span>
+    </button>
+  </div>
+</div>
+
+<!-- TERMS MODAL -->
+<div class="overlay" id="termsModal">
+  <div class="modal">
+    <button class="modal-x" onclick="closeAll()">✕</button>
+    <div class="modal-title">📋 <span data-vi>Điều khoản sử dụng</span><span data-en>Terms of Service</span><span data-ja>利用規約</span><span data-ko>이용약관</span><span data-zh>服务条款</span><span data-es>Términos de uso</span></div>
+    <p class="modal-sub" data-vi>Đọc và đồng ý để tiếp tục. Ví Web3 sẽ tự động tạo cho bạn.</p>
+    <p class="modal-sub" data-en>Read and agree to continue. A Web3 wallet will be auto-created for you.</p>
+    <p class="modal-sub" data-ja>続行するには読んで同意してください。Web3ウォレットが自動作成されます。</p>
+    <p class="modal-sub" data-ko>계속하려면 읽고 동의하세요. Web3 지갑이 자동 생성됩니다.</p>
+    <p class="modal-sub" data-zh>阅读并同意以继续。将自动为您创建Web3钱包。</p>
+    <p class="modal-sub" data-es>Lee y acepta para continuar. Se creará automáticamente una cartera Web3.</p>
+    <div class="terms-box">
+      <span data-vi>1. Ví Web3 được tạo tự động và gắn với tài khoản của bạn qua Privy.<br>2. Token SCFI hiện là token thử nghiệm trên Base Sepolia Testnet, không có giá trị thật.<br>3. Airdrop sẽ được phân phối khi dự án ra mắt Mainnet (TGE).<br>4. Để nhận token bạn cần ký một giao dịch testnet (miễn phí, $0 gas).<br>5. StreamFi không chịu trách nhiệm về biến động giá token sau TGE.<br>6. Mỗi người chỉ được tạo một tài khoản. Gian lận sẽ bị loại khỏi airdrop.<br>7. Dữ liệu của bạn được bảo vệ an toàn theo chính sách bảo mật của chúng tôi.</span>
+      <span data-en>1. A Web3 wallet is auto-created and linked to your account via Privy.<br>2. SCFI token is currently a test token on Base Sepolia Testnet with no real value.<br>3. Airdrop will be distributed at Mainnet launch (TGE).<br>4. To receive tokens you need to sign a testnet transaction (free, $0 gas).<br>5. StreamFi is not responsible for token price fluctuations after TGE.<br>6. Each person may only create one account. Fraud will be disqualified from airdrop.<br>7. Your data is kept secure per our privacy policy.</span>
+      <span data-ja>1. Web3ウォレットはPrivy経由で自動作成されアカウントにリンクされます。<br>2. SCFIトークンは現在Base Sepoliaテストネット上のテストトークンです。<br>3. エアドロップはメインネット起動時に配布されます。<br>4. トークン受け取りにはテストネットトランザクションへの署名が必要です（無料）。<br>5. TGE後のトークン価格変動についてStreamFiは責任を負いません。</span>
+      <span data-ko>1. Web3 지갑이 Privy를 통해 자동 생성되어 계정에 연결됩니다.<br>2. SCFI 토큰은 현재 Base Sepolia 테스트넷의 테스트 토큰입니다.<br>3. 에어드롭은 메인넷 출시(TGE) 시 배포됩니다.<br>4. 토큰을 받으려면 테스트넷 트랜잭션에 서명해야 합니다(무료).<br>5. TGE 이후 토큰 가격 변동에 대해 StreamFi는 책임지지 않습니다.</span>
+      <span data-zh>1. Web3钱包通过Privy自动创建并与您的账户关联。<br>2. SCFI代币目前是Base Sepolia测试网上的测试代币，没有实际价值。<br>3. 空投将在主网上线（TGE）时分发。<br>4. 接收代币需要签署一笔测试网交易（免费，0 gas费）。<br>5. TGE后代币价格波动StreamFi不承担责任。</span>
+      <span data-es>1. La cartera Web3 se crea automáticamente y se vincula a tu cuenta vía Privy.<br>2. El token SCFI es actualmente un token de prueba en Base Sepolia Testnet sin valor real.<br>3. El Airdrop se distribuirá en el lanzamiento de Mainnet (TGE).<br>4. Para recibir tokens necesitas firmar una transacción testnet (gratis, $0 gas).<br>5. StreamFi no es responsable de las fluctuaciones del precio del token después del TGE.</span>
+    </div>
+    <label class="terms-check">
+      <input type="checkbox" id="termsChk" onchange="document.getElementById('agreeBtn').disabled=!this.checked">
+      <span data-vi>Tôi đã đọc và đồng ý với điều khoản</span>
+      <span data-en>I have read and agree to the terms</span>
+      <span data-ja>利用規約を読み同意します</span>
+      <span data-ko>이용약관을 읽고 동의합니다</span>
+      <span data-zh>我已阅读并同意条款</span>
+      <span data-es>He leído y acepto los términos</span>
+    </label>
+    <button class="agree-btn" id="agreeBtn" disabled onclick="goToLogin()">
+      <span data-vi>Tiếp tục đăng nhập →</span><span data-en>Continue to Login →</span><span data-ja>ログインへ →</span><span data-ko>로그인으로 →</span><span data-zh>继续登录 →</span><span data-es>Continuar →</span>
+    </button>
+    <p style="font-size:10px;color:var(--muted);text-align:center;margin-top:12px;">Secured by <strong style="color:var(--accent)">Privy</strong> — <span data-vi>chỉ bạn mới truy cập được ví</span><span data-en>only you can access your wallet</span><span data-ja>ウォレットへのアクセスはあなただけ</span><span data-ko>지갑은 본인만 접근 가능</span><span data-zh>只有您才能访问您的钱包</span><span data-es>solo tú puedes acceder a tu cartera</span></p>
+  </div>
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="overlay" id="loginModal">
+  <div class="modal">
+    <button class="modal-x" onclick="closeAll()">✕</button>
+    <div class="modal-title"><span data-vi>Đăng nhập StreamFi</span><span data-en>Sign in to StreamFi</span><span data-ja>StreamFiにサインイン</span><span data-ko>StreamFi 로그인</span><span data-zh>登录StreamFi</span><span data-es>Iniciar sesión</span></div>
+    <p class="modal-sub"><span data-vi>Chọn phương thức — ví Web3 sẽ tự tạo.</span><span data-en>Choose method — Web3 wallet auto-created.</span><span data-ja>方法を選択 — ウォレット自動作成。</span><span data-ko>방법 선택 — 지갑 자동 생성.</span><span data-zh>选择方式 — 自动创建钱包。</span><span data-es>Elige método — cartera creada automáticamente.</span></p>
+    <div class="login-methods">
+      <button class="lbtn" onclick="loginWith('google')"><div class="lbtn-icon" style="background:#fff;">🇬</div><div class="lbtn-text">Google<small data-vi>Đăng nhập nhanh nhất</small><small data-en>Fastest login</small><small data-ja>最速ログイン</small><small data-ko>가장 빠른 로그인</small><small data-zh>最快登录</small><small data-es>Login más rápido</small></div>→</button>
+      <button class="lbtn" onclick="loginWith('twitter')"><div class="lbtn-icon" style="background:#000;">𝕏</div><div class="lbtn-text">Twitter / X<small data-vi>Đồng bộ followers</small><small data-en>Sync followers</small><small data-ja>フォロワー同期</small><small data-ko>팔로워 동기화</small><small data-zh>同步粉丝</small><small data-es>Sincronizar seguidores</small></div>→</button>
+      <button class="lbtn" onclick="loginWith('discord')"><div class="lbtn-icon" style="background:#5865F2;color:#fff;font-size:14px;">⚔</div><div class="lbtn-text">Discord<small data-vi>Kết nối server Discord</small><small data-en>Connect Discord server</small><small data-ja>Discordサーバー接続</small><small data-ko>Discord 서버 연결</small><small data-zh>连接Discord服务器</small><small data-es>Conectar servidor Discord</small></div>→</button>
+      <button class="lbtn" onclick="loginWith('tiktok')"><div class="lbtn-icon" style="background:#010101;color:#fff;font-size:14px;">♪</div><div class="lbtn-text">TikTok<small data-vi>Đồng bộ TikTok của bạn</small><small data-en>Sync your TikTok</small><small data-ja>TikTokを同期</small><small data-ko>TikTok 동기화</small><small data-zh>同步TikTok</small><small data-es>Sincronizar TikTok</small></div>→</button>
+      <div class="divider"><span data-vi>hoặc ví có sẵn</span><span data-en>or existing wallet</span><span data-ja>または既存のウォレット</span><span data-ko>또는 기존 지갑</span><span data-zh>或现有钱包</span><span data-es>o cartera existente</span></div>
+      <button class="lbtn" onclick="loginWith('metamask')"><div class="lbtn-icon" style="background:#F6851B;">🦊</div><div class="lbtn-text">MetaMask<small data-vi>Kết nối ví MetaMask</small><small data-en>Connect MetaMask wallet</small><small data-ja>MetaMask接続</small><small data-ko>MetaMask 연결</small><small data-zh>连接MetaMask</small><small data-es>Conectar MetaMask</small></div>→</button>
+      <button class="lbtn" onclick="loginWith('phantom')"><div class="lbtn-icon" style="background:#AB9FF2;">👻</div><div class="lbtn-text">Phantom <span style="font-size:10px;color:var(--muted)">Solana</span><small data-vi>Kết nối ví Phantom</small><small data-en>Connect Phantom wallet</small><small data-ja>Phantom接続</small><small data-ko>Phantom 연결</small><small data-zh>连接Phantom</small><small data-es>Conectar Phantom</small></div>→</button>
+    </div>
+  </div>
+</div>
+
+<!-- VERIFY TASK MODAL -->
+<div class="overlay" id="verifyModal">
+  <div class="modal">
+    <button class="modal-x" onclick="document.getElementById('verifyModal').classList.remove('open')">✕</button>
+    <div class="modal-title" id="vTitle">✅ Xác nhận nhiệm vụ</div>
+    <p class="modal-sub" id="vDesc"></p>
+    <div class="verify-inst" id="vInst"></div>
+    <div class="verify-btns">
+      <button class="v-cancel" onclick="document.getElementById('verifyModal').classList.remove('open')"><span data-vi>Chưa xong</span><span data-en>Not yet</span><span data-ja>まだ</span><span data-ko>아직</span><span data-zh>还没</span><span data-es>Aún no</span></button>
+      <button class="v-confirm" onclick="confirmTask()"><span data-vi>✅ Đã xong! Nhận SCFI</span><span data-en>✅ Done! Claim SCFI</span><span data-ja>✅ 完了！SCFI取得</span><span data-ko>✅ 완료! SCFI 받기</span><span data-zh>✅ 完成！领取SCFI</span><span data-es>✅ ¡Listo! Reclamar SCFI</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- LANG BAR -->
+<div class="lang-bar">
+  <span style="font-size:11px;color:var(--muted);margin-right:4px;">🌐</span>
+  <button class="lang-btn active" onclick="setLang('vi',this)">🇻🇳 VI</button>
+  <button class="lang-btn" onclick="setLang('en',this)">🇺🇸 EN</button>
+  <button class="lang-btn" onclick="setLang('ja',this)">🇯🇵 JA</button>
+  <button class="lang-btn" onclick="setLang('ko',this)">🇰🇷 KO</button>
+  <button class="lang-btn" onclick="setLang('zh',this)">🇨🇳 ZH</button>
+  <button class="lang-btn" onclick="setLang('es',this)">🇪🇸 ES</button>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo"><div class="logo-dot"></div>StreamFi</div>
+  <ul class="nav-links">
+    <li><a href="#early"><span data-vi>Đăng ký sớm</span><span data-en>Early Access</span><span data-ja>早期登録</span><span data-ko>사전 등록</span><span data-zh>早期注册</span><span data-es>Acceso temprano</span></a></li>
+    <li><a href="#airdrop">Airdrop 🪂</a></li>
+    <li><a href="#compare"><span data-vi>So sánh</span><span data-en>Compare</span><span data-ja>比較</span><span data-ko>비교</span><span data-zh>比较</span><span data-es>Comparar</span></a></li>
+  </ul>
+  <div class="nav-right">
+    <div id="navOut">
+      <button class="btn-login" onclick="openLogin()">
+        <span data-vi>🔑 Đăng nhập</span><span data-en>🔑 Sign In</span><span data-ja>🔑 ログイン</span><span data-ko>🔑 로그인</span><span data-zh>🔑 登录</span><span data-es>🔑 Ingresar</span>
+      </button>
+    </div>
+    <div class="user-info" id="navIn">
+      <div class="user-avatar" id="uAvatar">?</div>
+      <div>
+        <div id="uName" style="font-size:12px;font-weight:600;"></div>
+        <div id="uAddr" style="font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;"></div>
+      </div>
+      <div class="user-bal" id="uBal">0 SCFI</div>
+      <button class="btn-logout" onclick="logoutUser()"><span data-vi>Thoát</span><span data-en>Logout</span><span data-ja>ログアウト</span><span data-ko>로그아웃</span><span data-zh>退出</span><span data-es>Salir</span></button>
+    </div>
+  </div>
+</nav>
+
+<!-- WALLET BAR (shown after login) -->
+<div class="wallet-bar" id="walletBar">
+  <div class="wallet-inner">
+    <div class="wcard">
+      <div class="wcard-icon">💼</div>
+      <div><h5><span data-vi>Địa chỉ ví</span><span data-en>Wallet address</span><span data-ja>ウォレットアドレス</span><span data-ko>지갑 주소</span><span data-zh>钱包地址</span><span data-es>Dirección cartera</span></h5><p id="wAddr" style="font-size:11px;">0x0000...0000</p></div>
+    </div>
+    <div class="wcard">
+      <div class="wcard-icon">🪙</div>
+      <div><h5>SCFI Balance</h5><p class="green" id="wBal">0 SCFI</p></div>
+    </div>
+    <div class="wcard">
+      <div class="wcard-icon">🏆</div>
+      <div><h5><span data-vi>Điểm Airdrop</span><span data-en>Airdrop Points</span><span data-ja>エアドロップポイント</span><span data-ko>에어드롭 포인트</span><span data-zh>空投积分</span><span data-es>Puntos Airdrop</span></h5><p class="green" id="wPts">0 pts</p></div>
+    </div>
+    <div class="wactions">
+      <button class="wbtn" onclick="document.getElementById('airdrop').scrollIntoView({behavior:'smooth'})">🪂 Airdrop</button>
+      <button class="wbtn primary" onclick="showToast('📺 Live feature coming soon!')">🎤 <span data-vi>Bắt đầu Live</span><span data-en>Go Live</span><span data-ja>配信開始</span><span data-ko>라이브 시작</span><span data-zh>开始直播</span><span data-es>Iniciar Live</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <!-- Floating cards -->
+  <div class="float-card float-card-1">
+    <div class="float-avatar" style="background:linear-gradient(135deg,#7C3AED,#06B6D4);">🎤</div>
+    <div><div style="font-size:12px;font-weight:600;">@nguyenminh</div><div style="font-size:10px;color:var(--muted);display:flex;align-items:center;gap:4px;"><div class="live-pip"></div>LIVE · 1.2K</div></div>
+  </div>
+  <div class="float-card float-card-2">
+    <div class="donate-pill">+15 SCFI 🎆</div>
+    <div style="font-size:11px;color:var(--muted);">@fan_abc</div>
+  </div>
+  <div class="float-card float-card-3">
+    <div class="float-avatar" style="background:linear-gradient(135deg,#10B981,#06B6D4);">🎵</div>
+    <div><div style="font-size:12px;font-weight:600;">@musicstar</div><div style="font-size:10px;color:var(--muted);display:flex;align-items:center;gap:4px;"><div class="live-pip"></div>LIVE · 847</div></div>
+  </div>
+  <div class="float-card float-card-4">
+    <div style="font-size:11px;color:var(--muted);">KOL nhận</div>
+    <div style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:var(--green);">100%</div>
+    <div style="font-size:18px;">💰</div>
+  </div>
+
+  <!-- Ticker -->
+  <div class="ticker-wrap" style="max-width:600px;">
+    <div class="ticker-inner">
+      <div class="ticker-item">$SCFI <span>↑ 12.4%</span></div>
+      <div class="ticker-item">Airdrop Pool: <span>500M SCFI</span></div>
+      <div class="ticker-item">Creator Fee: <span>0%</span></div>
+      <div class="ticker-item">Network: <span>Base Sepolia</span></div>
+      <div class="ticker-item">TGE: <span>Coming Soon</span></div>
+      <div class="ticker-item">$SCFI <span>↑ 12.4%</span></div>
+      <div class="ticker-item">Airdrop Pool: <span>500M SCFI</span></div>
+      <div class="ticker-item">Creator Fee: <span>0%</span></div>
+      <div class="ticker-item">Network: <span>Base Sepolia</span></div>
+      <div class="ticker-item">TGE: <span>Coming Soon</span></div>
+    </div>
+  </div>
+
+  <div class="hero-badge"><div class="badge-dot"></div><span data-vi>Đang xây dựng · Mạng Base</span><span data-en>Building Now · Base Network</span><span data-ja>開発中 · Base</span><span data-ko>개발 중 · Base</span><span data-zh>构建中 · Base</span><span data-es>En desarrollo · Base</span></div>
+
+  <h1 data-vi>Stream thật.<br>Kiếm thật.<br><span class="grad">100% của bạn.</span></h1>
+  <h1 data-en>Stream live.<br>Earn real.<br><span class="grad">Keep 100%.</span></h1>
+  <h1 data-ja>配信する。<br>稼ぐ。<br><span class="grad">100%あなたのもの。</span></h1>
+  <h1 data-ko>라이브 스트리밍.<br>실제로 버세요.<br><span class="grad">100% 당신 것.</span></h1>
+  <h1 data-zh>直播。<br>真实赚取。<br><span class="grad">100%归你所有。</span></h1>
+  <h1 data-es>Transmite en vivo.<br>Gana de verdad.<br><span class="grad">El 100% es tuyo.</span></h1>
+
+  <p data-vi>Nền tảng livestream Web3 đầu tiên — fan donate token trực tiếp cho KOL, không qua trung gian, không bị cắt phần trăm.</p>
+  <p data-en>The first Web3 livestream platform — fans donate tokens directly to creators, zero middlemen, zero cuts.</p>
+  <p data-ja>初のWeb3ライブ配信プラットフォーム — ファンがKOLに直接トークンを寄付、仲介なし。</p>
+  <p data-ko>최초의 Web3 라이브 스트리밍 플랫폼 — 팬이 직접 KOL에게 토큰 기부, 중간 수수료 없음.</p>
+  <p data-zh>首个Web3直播平台 — 粉丝直接向KOL打赏代币，零中间商，零抽成。</p>
+  <p data-es>La primera plataforma de livestream Web3 — fans donan tokens directamente a creadores, sin intermediarios.</p>
+
+  <div class="hero-btns">
+    <button class="btn-primary" onclick="openLogin()">🚀 <span data-vi>Đăng ký nhận Airdrop</span><span data-en>Register for Airdrop</span><span data-ja>エアドロップ登録</span><span data-ko>에어드롭 등록</span><span data-zh>注册领取空投</span><span data-es>Registrarse para Airdrop</span></button>
+    <button class="btn-outline" onclick="document.getElementById('preview').scrollIntoView({behavior:'smooth'})">▶ <span data-vi>Xem demo</span><span data-en>Watch demo</span><span data-ja>デモを見る</span><span data-ko>데모 보기</span><span data-zh>查看演示</span><span data-es>Ver demo</span></button>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-pill"><div class="num">0%</div><div class="lbl"><span data-vi>Phí nền tảng</span><span data-en>Platform fee</span><span data-ja>手数料</span><span data-ko>플랫폼 수수료</span><span data-zh>平台费用</span><span data-es>Tarifa plataforma</span></div></div>
+    <div class="stat-pill"><div class="num">500M</div><div class="lbl">SCFI Airdrop</div></div>
+    <div class="stat-pill"><div class="num">~$0.001</div><div class="lbl"><span data-vi>Phí donate</span><span data-en>Per donation</span><span data-ja>寄付コスト</span><span data-ko>기부 수수료</span><span data-zh>打赏费用</span><span data-es>Por donación</span></div></div>
+    <div class="stat-pill"><div class="num">Web2 UX</div><div class="lbl"><span data-vi>Không cần ví</span><span data-en>No wallet needed</span><span data-ja>ウォレット不要</span><span data-ko>지갑 불필요</span><span data-zh>无需钱包</span><span data-es>Sin cartera</span></div></div>
+  </div>
+</section>
+
+<!-- STREAM PREVIEW -->
+<!-- HLS.js for viewing -->
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+<div class="preview-section" id="preview">
+  <div class="stream-mockup">
+    <div class="mockup-bar">
+      <div class="mock-dot" style="background:#FF5F57;"></div>
+      <div class="mock-dot" style="background:#FFBD2E;"></div>
+      <div class="mock-dot" style="background:#28CA41;"></div>
+      <div class="mock-url" id="streamUrl">streamfi.app/live/nguyenminh</div>
+      <div class="live-chip" id="liveChip"><div style="width:5px;height:5px;background:#fff;border-radius:50%;"></div><span id="liveStatus">OFFLINE</span></div>
+    </div>
+    <div class="mockup-body">
+      <div class="video-zone" style="position:relative;overflow:hidden;">
+
+        <!-- VIEWER: HLS video player (shown when someone is live) -->
+        <video id="hlsVideo" style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" playsinline autoplay muted></video>
+
+        <!-- KOL: Camera preview (shown when KOL is going live) -->
+        <video id="camPreview" style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0;transform:scaleX(-1);" playsinline autoplay muted></video>
+
+        <!-- OFFLINE: Default animated state -->
+        <div id="offlineState" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;height:100%;min-height:260px;width:100%;">
+          <div class="wave-bars">
+            <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+            <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+            <div class="wave-bar"></div><div class="wave-bar"></div>
+          </div>
+          <div class="kol-avatar" id="kolAvatarEl">🎤</div>
+          <div class="kol-name-mock" id="kolNameEl">Nguyễn Minh</div>
+          <div class="viewers-mock"><span id="viewerCount">0</span> <span data-vi>đang xem</span><span data-en>watching</span><span data-ja>視聴中</span><span data-ko>시청 중</span><span data-zh>观看中</span><span data-es>viendo</span></div>
+          <div style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;">● OFFLINE</div>
+        </div>
+
+        <!-- KOL CONTROLS (bottom overlay, shown after login) -->
+        <div id="kolControls" style="display:none;position:absolute;bottom:12px;left:50%;transform:translateX(-50%);z-index:10;">
+          <!-- Before going live -->
+          <div id="goLiveBtn">
+            <button onclick="startLive()" style="background:var(--red);color:#fff;border:none;padding:10px 24px;border-radius:8px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:0 4px 20px rgba(239,68,68,0.4);">
+              <span style="width:8px;height:8px;background:#fff;border-radius:50%;"></span>
+              <span data-vi>🎤 Bắt đầu Live</span><span data-en>🎤 Go Live</span><span data-ja>🎤 配信開始</span><span data-ko>🎤 라이브 시작</span><span data-zh>🎤 开始直播</span><span data-es>🎤 Iniciar Live</span>
+            </button>
+          </div>
+          <!-- While live -->
+          <div id="stopLiveBtn" style="display:none;display:flex;gap:8px;">
+            <button onclick="stopLive()" style="background:var(--red);color:#fff;border:none;padding:10px 20px;border-radius:8px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;cursor:pointer;">
+              ⏹ <span data-vi>Dừng Live</span><span data-en>Stop Live</span><span data-ja>配信停止</span><span data-ko>라이브 중지</span><span data-zh>停止直播</span><span data-es>Detener Live</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- CAMERA PERMISSION overlay -->
+        <div id="camPermission" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,0.8);align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:20;">
+          <div style="font-size:36px;">📷</div>
+          <div style="font-size:14px;font-weight:600;" data-vi>Cho phép truy cập camera</div>
+          <div style="font-size:14px;font-weight:600;" data-en>Allow camera access</div>
+          <div style="font-size:14px;font-weight:600;" data-ja>カメラアクセスを許可</div>
+          <div style="font-size:14px;font-weight:600;" data-ko>카메라 접근 허용</div>
+          <div style="font-size:14px;font-weight:600;" data-zh>允许访问摄像头</div>
+          <div style="font-size:14px;font-weight:600;" data-es>Permitir acceso a cámara</div>
+          <div style="font-size:12px;color:var(--muted);text-align:center;max-width:200px;" data-vi>Bấm "Allow" khi trình duyệt hỏi để bắt đầu phát</div>
+          <div style="font-size:12px;color:var(--muted);text-align:center;max-width:200px;" data-en>Click "Allow" when browser asks to start streaming</div>
+        </div>
+
+        <!-- Donate effects overlay -->
+        <div id="donateEffects" style="position:absolute;top:10px;right:10px;display:flex;flex-direction:column;gap:4px;pointer-events:none;z-index:5;"></div>
+      </div>
+
+      <div class="chat-side">
+        <div class="chat-hdr"><div class="online-dot"></div>Live Chat <span id="chatCount" style="margin-left:auto;color:var(--green);font-size:10px;">0 online</span></div>
+        <div class="chat-msgs" id="chatMsgs">
+          <div class="cmsg cdonate"><div class="cu">@tranlan99</div><div>→ <span class="camt">15 SCFI</span> 🎇</div></div>
+          <div class="cmsg"><span class="cu">@hoanganh:</span> great stream! 🔥</div>
+          <div class="cmsg cdonate"><div class="cu">@cryptofan</div><div>→ <span class="camt">10 SCFI</span> 🎆</div></div>
+          <div class="cmsg"><span class="cu">@web3girl:</span> so easy!</div>
+        </div>
+        <!-- Chat input -->
+        <div style="padding:8px 12px;border-top:1px solid var(--border);display:flex;gap:6px;">
+          <input id="chatInput" placeholder="Nhắn tin..." style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text);font-size:12px;font-family:'Space Grotesk',sans-serif;outline:none;" onkeydown="if(event.key==='Enter')sendChat()">
+          <button onclick="sendChat()" style="background:var(--accent);border:none;color:#fff;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">→</button>
+        </div>
+        <div class="gift-row">
+          <button class="gbtn" id="g10" onclick="sendGift(10,'❤️')" disabled>❤️ 10</button>
+          <button class="gbtn hot" id="g15" onclick="sendGift(15,'🎆')" disabled>🎆 15</button>
+          <button class="gbtn" id="g50" onclick="sendGift(50,'👑')" disabled>👑 50</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EARLY ACCESS SECTION (main landing) -->
+<section class="early-section" id="early">
+  <div class="early-inner">
+    <div class="sec-label">Early Access</div>
+    <h2 data-vi>Tham gia sớm.<br>Nhận <span style="color:var(--green);">SCFI miễn phí.</span></h2>
+    <h2 data-en>Join Early.<br>Earn <span style="color:var(--green);">Free SCFI.</span></h2>
+    <h2 data-ja>早期参加。<br><span style="color:var(--green);">無料SCFIを獲得。</span></h2>
+    <h2 data-ko>일찍 참여하세요.<br><span style="color:var(--green);">무료 SCFI 획득.</span></h2>
+    <h2 data-zh>早期加入。<br><span style="color:var(--green);">免费获取SCFI。</span></h2>
+    <h2 data-es>Únete Pronto.<br><span style="color:var(--green);">Gana SCFI Gratis.</span></h2>
+    <p data-vi>Không cần ví, không cần tiền thật. Đăng nhập và follow các kênh để nhận token — sẽ đổi thành SCFI Mainnet thật khi TGE.</p>
+    <p data-en>No wallet or real money needed. Sign in and follow our channels to earn tokens — converted to real SCFI Mainnet at TGE.</p>
+    <p data-ja>ウォレットも実際のお金も不要。サインインしてチャンネルをフォローしてトークンを獲得 — TGE時にリアルSCFIメインネットに変換されます。</p>
+    <p data-ko>지갑이나 실제 돈 불필요. 로그인하고 채널을 팔로우하여 토큰 획득 — TGE 시 실제 SCFI 메인넷으로 전환됩니다.</p>
+    <p data-zh>无需钱包或真实资金。登录并关注我们的频道以获得代币 — TGE时转换为真实SCFI主网。</p>
+    <p data-es>Sin cartera ni dinero real. Inicia sesión y sigue nuestros canales para ganar tokens — convertidos a SCFI Mainnet real en el TGE.</p>
+
+    <!-- Social tasks (visible to all, requires login to claim) -->
+    <div class="social-tasks" id="socialTasks">
+      <div class="stask" id="st-twitter" onclick="doSocialTask('twitter','Follow @streamfiapp',10,'https://x.com/streamfiapp')">
+        <div class="stask-icon" style="background:#000;">𝕏</div>
+        <div class="stask-info">
+          <div class="stask-name">Follow @streamfiapp</div>
+          <div class="stask-desc" data-vi>Theo dõi trang Twitter/X của StreamFi</div>
+          <div class="stask-desc" data-en>Follow StreamFi on Twitter/X</div>
+          <div class="stask-desc" data-ja>StreamFiのTwitter/Xをフォロー</div>
+          <div class="stask-desc" data-ko>StreamFi Twitter/X 팔로우</div>
+          <div class="stask-desc" data-zh>关注StreamFi的Twitter/X</div>
+          <div class="stask-desc" data-es>Seguir StreamFi en Twitter/X</div>
+        </div>
+        <div><div class="stask-reward">+10 SCFI</div><div class="stask-status" id="ss-twitter"></div></div>
+      </div>
+
+      <div class="stask" id="st-discord" onclick="doSocialTask('discord','Join Discord',12,'https://discord.gg/KZzbwqtv')">
+        <div class="stask-icon" style="background:#5865F2;color:#fff;font-size:16px;">⚔</div>
+        <div class="stask-info">
+          <div class="stask-name">Join Discord</div>
+          <div class="stask-desc" data-vi>Tham gia server Discord StreamFi</div>
+          <div class="stask-desc" data-en>Join StreamFi Discord server</div>
+          <div class="stask-desc" data-ja>StreamFi Discordサーバーに参加</div>
+          <div class="stask-desc" data-ko>StreamFi Discord 서버 참여</div>
+          <div class="stask-desc" data-zh>加入StreamFi Discord服务器</div>
+          <div class="stask-desc" data-es>Unirse al servidor Discord de StreamFi</div>
+        </div>
+        <div><div class="stask-reward">+12 SCFI</div><div class="stask-status" id="ss-discord"></div></div>
+      </div>
+
+      <div class="stask" id="st-telegram" onclick="doSocialTask('telegram','Join Telegram',12,'https://t.me/StreamFi_App')">
+        <div class="stask-icon" style="background:#2AABEE;color:#fff;font-size:16px;">✈</div>
+        <div class="stask-info">
+          <div class="stask-name">Join Telegram</div>
+          <div class="stask-desc" data-vi>Tham gia group Telegram @StreamFi_App</div>
+          <div class="stask-desc" data-en>Join Telegram group @StreamFi_App</div>
+          <div class="stask-desc" data-ja>Telegram @StreamFi_Appに参加</div>
+          <div class="stask-desc" data-ko>Telegram @StreamFi_App 참여</div>
+          <div class="stask-desc" data-zh>加入Telegram群 @StreamFi_App</div>
+          <div class="stask-desc" data-es>Unirse al grupo Telegram @StreamFi_App</div>
+        </div>
+        <div><div class="stask-reward">+12 SCFI</div><div class="stask-status" id="ss-telegram"></div></div>
+      </div>
+
+      <div class="stask" id="st-retweet" onclick="doSocialTask('retweet','Retweet post',10,'https://x.com/streamfiapp')">
+        <div class="stask-icon" style="background:#1DA1F2;color:#fff;font-size:16px;">🔁</div>
+        <div class="stask-info">
+          <div class="stask-name">Retweet</div>
+          <div class="stask-desc" data-vi>Retweet bài viết mới nhất của StreamFi</div>
+          <div class="stask-desc" data-en>Retweet StreamFi's latest post</div>
+          <div class="stask-desc" data-ja>StreamFiの最新投稿をリツイート</div>
+          <div class="stask-desc" data-ko>StreamFi 최신 게시물 리트윗</div>
+          <div class="stask-desc" data-zh>转发StreamFi最新帖子</div>
+          <div class="stask-desc" data-es>Retweetear la última publicación de StreamFi</div>
+        </div>
+        <div><div class="stask-reward">+10 SCFI</div><div class="stask-status" id="ss-retweet"></div></div>
+      </div>
+
+      <div class="stask" id="st-invite" onclick="doSocialTask('invite','Invite friend',15,'')">
+        <div class="stask-icon" style="background:rgba(124,58,237,0.2);font-size:18px;">👥</div>
+        <div class="stask-info">
+          <div class="stask-name"><span data-vi>Mời bạn bè</span><span data-en>Invite friend</span><span data-ja>友達招待</span><span data-ko>친구 초대</span><span data-zh>邀请朋友</span><span data-es>Invitar amigo</span></div>
+          <div class="stask-desc" data-vi>Mời 1 người bạn đăng nhập vào StreamFi</div>
+          <div class="stask-desc" data-en>Invite 1 friend to sign in to StreamFi</div>
+          <div class="stask-desc" data-ja>1人の友達をStreamFiに招待</div>
+          <div class="stask-desc" data-ko>친구 1명을 StreamFi에 초대</div>
+          <div class="stask-desc" data-zh>邀请1位朋友登录StreamFi</div>
+          <div class="stask-desc" data-es>Invitar 1 amigo a registrarse en StreamFi</div>
+        </div>
+        <div><div class="stask-reward">+15 SCFI</div><div class="stask-status" id="ss-invite"></div></div>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-wrap" id="progressWrap" style="display:none;">
+      <div class="progress-labels">
+        <span><span data-vi>Nhiệm vụ đã hoàn thành</span><span data-en>Tasks completed</span><span data-ja>完了タスク</span><span data-ko>완료된 작업</span><span data-zh>已完成任务</span><span data-es>Tareas completadas</span>: <span id="tasksCount">0</span>/5</span>
+        <span id="totalEarned">0 SCFI</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%;"></div></div>
+      <div class="progress-labels">
+        <span style="color:var(--green);" data-vi>🎉 Hoàn thành hết để nhận Tier 2!</span>
+        <span style="color:var(--green);" data-en>🎉 Complete all to get Tier 2!</span>
+        <span style="color:var(--green);" data-ja>🎉 全完了でTier 2獲得！</span>
+        <span style="color:var(--green);" data-ko>🎉 모두 완료하면 Tier 2 획득!</span>
+        <span style="color:var(--green);" data-zh>🎉 全部完成获得Tier 2！</span>
+        <span style="color:var(--green);" data-es>🎉 ¡Completa todo para Tier 2!</span>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="earlyBtn" onclick="openLogin()" style="margin-top:24px;width:100%;max-width:400px;font-size:16px;padding:16px;">
+      🪂 <span data-vi>Đăng nhập & Bắt đầu nhận SCFI</span><span data-en>Sign In & Start Earning SCFI</span><span data-ja>サインイン＆SCFI獲得開始</span><span data-ko>로그인 & SCFI 획득 시작</span><span data-zh>登录并开始获取SCFI</span><span data-es>Iniciar sesión y empezar a ganar SCFI</span>
+    </button>
+  </div>
+</section>
+
+<!-- AIRDROP SECTION -->
+<section class="section" id="airdrop" style="background:var(--bg);">
+  <div class="sec-label">AIRDROP SEASON 1</div>
+  <div class="sec-title" data-vi>500 triệu SCFI cho cộng đồng.</div>
+  <div class="sec-title" data-en>500 Million SCFI for the community.</div>
+  <div class="sec-title" data-ja>コミュニティに5億SCFI。</div>
+  <div class="sec-title" data-ko>커뮤니티를 위한 5억 SCFI.</div>
+  <div class="sec-title" data-zh>5亿SCFI献给社区。</div>
+  <div class="sec-title" data-es>500 Millones de SCFI para la comunidad.</div>
+
+  <div class="pool-card">
+    <span class="pool-num">500,000,000</span>
+    <div class="pool-sub">SCFI · 50% <span data-vi>tổng cung · Không cần đầu tư tiền thật</span><span data-en>total supply · No real money needed</span><span data-ja>総供給 · 実際のお金不要</span><span data-ko>총 공급 · 실제 돈 불필요</span><span data-zh>总供应 · 无需真实资金</span><span data-es>suministro total · Sin dinero real</span></div>
+    <div class="pbar-labels"><span>8% <span data-vi>đã phân phối</span><span data-en>distributed</span><span data-ja>配布済み</span><span data-ko>배포됨</span><span data-zh>已分配</span><span data-es>distribuido</span></span><span>40M / 500M SCFI</span></div>
+    <div class="pbar"><div class="pbar-fill"></div></div>
+  </div>
+
+  <div class="tiers">
+    <div class="tier">
+      <div class="tier-icon">🌱</div>
+      <div class="tier-name">Tier 1 · Early Fan</div>
+      <div class="tier-reward">~59 SCFI</div>
+      <div class="tier-token"><span data-vi>Hoàn thành tất cả nhiệm vụ MXH</span><span data-en>Complete all social tasks</span><span data-ja>全ソーシャルタスク完了</span><span data-ko>모든 소셜 작업 완료</span><span data-zh>完成所有社交任务</span><span data-es>Completar todas las tareas sociales</span></div>
+      <ul class="tier-tasks">
+        <li data-vi>Follow Twitter (+10)</li><li data-en>Follow Twitter (+10)</li><li data-ja>Twitter フォロー (+10)</li><li data-ko>Twitter 팔로우 (+10)</li><li data-zh>关注Twitter (+10)</li><li data-es>Seguir Twitter (+10)</li>
+        <li data-vi>Join Discord (+12)</li><li data-en>Join Discord (+12)</li><li data-ja>Discord参加 (+12)</li><li data-ko>Discord 참여 (+12)</li><li data-zh>加入Discord (+12)</li><li data-es>Unirse Discord (+12)</li>
+        <li data-vi>Join Telegram (+12)</li><li data-en>Join Telegram (+12)</li><li data-ja>Telegram参加 (+12)</li><li data-ko>Telegram 참여 (+12)</li><li data-zh>加入Telegram (+12)</li><li data-es>Unirse Telegram (+12)</li>
+        <li data-vi>Retweet bài viết (+10)</li><li data-en>Retweet post (+10)</li><li data-ja>リツイート (+10)</li><li data-ko>리트윗 (+10)</li><li data-zh>转发帖子 (+10)</li><li data-es>Retweetear (+10)</li>
+        <li data-vi>Mời bạn bè (+15)</li><li data-en>Invite friend (+15)</li><li data-ja>友達招待 (+15)</li><li data-ko>친구 초대 (+15)</li><li data-zh>邀请朋友 (+15)</li><li data-es>Invitar amigo (+15)</li>
+      </ul>
+    </div>
+    <div class="tier hot">
+      <div class="tier-icon">🔥</div>
+      <div class="tier-name">Tier 2 · Supporter</div>
+      <div class="tier-reward">+50 SCFI</div>
+      <div class="tier-token"><span data-vi>Thêm vào Tier 1</span><span data-en>On top of Tier 1</span><span data-ja>Tier 1に追加</span><span data-ko>Tier 1에 추가</span><span data-zh>在Tier 1基础上</span><span data-es>Además del Tier 1</span></div>
+      <ul class="tier-tasks">
+        <li data-vi>Donate lần đầu (+15)</li><li data-en>First donation (+15)</li><li data-ja>初めての寄付 (+15)</li><li data-ko>첫 기부 (+15)</li><li data-zh>首次打赏 (+15)</li><li data-es>Primera donación (+15)</li>
+        <li data-vi>Xem live 5 phút (+5)</li><li data-en>Watch live 5 min (+5)</li><li data-ja>5分ライブ視聴 (+5)</li><li data-ko>라이브 5분 시청 (+5)</li><li data-zh>看直播5分钟 (+5)</li><li data-es>Ver live 5 min (+5)</li>
+        <li data-vi>Mời 3 bạn bè (+45)</li><li data-en>Invite 3 friends (+45)</li><li data-ja>友達3人招待 (+45)</li><li data-ko>친구 3명 초대 (+45)</li><li data-zh>邀请3位朋友 (+45)</li><li data-es>Invitar 3 amigos (+45)</li>
+      </ul>
+    </div>
+    <div class="tier">
+      <div class="tier-icon">👑</div>
+      <div class="tier-name">Tier 3 · KOL</div>
+      <div class="tier-reward">+200 SCFI</div>
+      <div class="tier-token"><span data-vi>Thêm vào Tier 1+2</span><span data-en>On top of Tier 1+2</span><span data-ja>Tier 1+2に追加</span><span data-ko>Tier 1+2에 추가</span><span data-zh>在Tier 1+2基础上</span><span data-es>Además del Tier 1+2</span></div>
+      <ul class="tier-tasks">
+        <li data-vi>Đăng ký làm KOL beta</li><li data-en>Register as beta KOL</li><li data-ja>ベータKOL登録</li><li data-ko>베타 KOL 등록</li><li data-zh>注册为测试KOL</li><li data-es>Registrarse como KOL beta</li>
+        <li data-vi>Phát 1 buổi livestream</li><li data-en>Host 1 test livestream</li><li data-ja>テスト配信1回</li><li data-ko>테스트 라이브 1회</li><li data-zh>进行1次测试直播</li><li data-es>1 livestream de prueba</li>
+        <li data-vi>Có ít nhất 10 fan xem</li><li data-en>Get 10+ fans watching</li><li data-ja>10人以上のファン</li><li data-ko>팬 10명 이상</li><li data-zh>至少10位粉丝观看</li><li data-es>Al menos 10 fans viendo</li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="text-align:center;">
+    <button class="btn-primary" onclick="openLogin()" style="font-size:15px;padding:15px 40px;">
+      🪂 <span data-vi>Tham gia Airdrop ngay</span><span data-en>Join Airdrop Now</span><span data-ja>今すぐ参加</span><span data-ko>지금 참여</span><span data-zh>立即参与</span><span data-es>Participar ahora</span>
+    </button>
+  </div>
+</section>
+
+<!-- COMPARE -->
+<section class="section" id="compare" style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div class="sec-label"><span data-vi>Tại sao StreamFi?</span><span data-en>Why StreamFi?</span><span data-ja>なぜStreamFi？</span><span data-ko>왜 StreamFi?</span><span data-zh>为什么StreamFi？</span><span data-es>¿Por qué StreamFi?</span></div>
+  <div class="sec-title" data-vi>TikTok cắt 70%.<br>StreamFi cắt 0%.</div>
+  <div class="sec-title" data-en>TikTok takes 70%.<br>StreamFi takes 0%.</div>
+  <div class="sec-title" data-ja>TikTokは70%取る。<br>StreamFiは0%。</div>
+  <div class="sec-title" data-ko>TikTok은 70% 가져간다.<br>StreamFi는 0%.</div>
+  <div class="sec-title" data-zh>TikTok拿走70%。<br>StreamFi拿走0%。</div>
+  <div class="sec-title" data-es>TikTok se lleva el 70%.<br>StreamFi se lleva el 0%.</div>
+  <div class="compare-grid">
+    <div class="cmp bad">
+      <h3>❌ TikTok / YouTube</h3>
+      <ul>
+        <li><span class="xi">✗</span><span data-vi>Cắt 30–70% thu nhập gift</span><span data-en>Takes 30–70% of gifts</span><span data-ja>ギフトの30〜70%を差引</span><span data-ko>선물의 30-70% 차감</span><span data-zh>扣除礼物的30-70%</span><span data-es>Se lleva 30-70% de los regalos</span></li>
+        <li><span class="xi">✗</span><span data-vi>Bị ban bất kỳ lúc nào</span><span data-en>Can ban you anytime</span><span data-ja>いつでもBAN</span><span data-ko>언제든 계정 정지</span><span data-zh>随时可封号</span><span data-es>Pueden banearte en cualquier momento</span></li>
+        <li><span class="xi">✗</span><span data-vi>Không sở hữu audience</span><span data-en>Don't own your audience</span><span data-ja>視聴者を所有できない</span><span data-ko>시청자를 소유할 수 없음</span><span data-zh>不拥有受众</span><span data-es>No posees tu audiencia</span></li>
+        <li><span class="xi">✗</span><span data-vi>Thanh toán chậm, nhiều bước</span><span data-en>Slow, multi-step payments</span><span data-ja>支払いが遅く複雑</span><span data-ko>느리고 복잡한 결제</span><span data-zh>支付缓慢步骤繁多</span><span data-es>Pagos lentos y complejos</span></li>
+      </ul>
+    </div>
+    <div class="cmp good">
+      <h3>✅ StreamFi</h3>
+      <ul>
+        <li><span class="ci">✓</span><span data-vi>KOL giữ 100% — 0% phí</span><span data-en>Creator keeps 100% — 0% fee</span><span data-ja>100%保持 — 手数料0%</span><span data-ko>100% 유지 — 0% 수수료</span><span data-zh>创作者保留100% — 0%费用</span><span data-es>Creador guarda 100% — 0% tarifa</span></li>
+        <li><span class="ci">✓</span><span data-vi>Ví và data thuộc về bạn mãi</span><span data-en>Wallet & data always yours</span><span data-ja>ウォレット＆データは永遠に</span><span data-ko>지갑 & 데이터 영원히 소유</span><span data-zh>钱包和数据永远属于您</span><span data-es>Cartera y datos siempre son tuyos</span></li>
+        <li><span class="ci">✓</span><span data-vi>Nhận tiền ngay qua blockchain</span><span data-en>Instant payment via blockchain</span><span data-ja>ブロックチェーンで即時支払い</span><span data-ko>블록체인으로 즉시 결제</span><span data-zh>区块链即时支付</span><span data-es>Pago instantáneo vía blockchain</span></li>
+        <li><span class="ci">✓</span><span data-vi>Đăng nhập Google, không cần ví</span><span data-en>Google login, no wallet needed</span><span data-ja>Googleログイン、ウォレット不要</span><span data-ko>Google 로그인, 지갑 불필요</span><span data-zh>Google登录，无需钱包</span><span data-es>Login con Google, sin cartera</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- CHAINS -->
+<div class="chains">
+  <div class="chains-label"><span data-vi>Đang xây dựng trên</span><span data-en>Building on</span><span data-ja>構築中</span><span data-ko>구축 중</span><span data-zh>正在构建</span><span data-es>Construyendo en</span></div>
+  <div class="chain-list">
+    <div class="chain-tag" onclick="showToast('🔵 Base — $0.001/tx, backed by Coinbase!')">🔵 Base (Coinbase L2)</div>
+    <div class="chain-tag" onclick="showToast('🟣 Solana — Fast & cheap!')">🟣 Solana</div>
+    <div class="chain-tag" onclick="showToast('🟢 Mint Blockchain — Built for Social!')">🟢 Mint Blockchain</div>
+  </div>
+</div>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2><span data-vi>Sẵn sàng kiếm 100%?</span><span data-en>Ready to earn 100%?</span><span data-ja>100%稼ぐ準備は？</span><span data-ko>100% 벌 준비됐나요?</span><span data-zh>准备好赚取100%了吗？</span><span data-es>¿Listo para ganar el 100%?</span></h2>
+  <p><span data-vi>Tham gia miễn phí — không cần thẻ ngân hàng, không cần ví crypto.</span><span data-en>Join free — no credit card, no crypto wallet needed.</span><span data-ja>無料参加 — クレジットカードもウォレットも不要。</span><span data-ko>무료 참여 — 신용카드, 암호화폐 지갑 불필요.</span><span data-zh>免费加入 — 无需信用卡，无需加密钱包。</span><span data-es>Únete gratis — sin tarjeta de crédito, sin cartera crypto.</span></p>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+    <button class="btn-primary" onclick="openLogin()" style="font-size:15px;padding:15px 36px;">🎤 <span data-vi>Đăng nhập ngay</span><span data-en>Sign In Now</span><span data-ja>今すぐサインイン</span><span data-ko>지금 로그인</span><span data-zh>立即登录</span><span data-es>Iniciar sesión ahora</span></button>
+    <button class="btn-outline" onclick="document.getElementById('airdrop').scrollIntoView({behavior:'smooth'})" style="font-size:15px;padding:15px 36px;">🪂 Airdrop</button>
+  </div>
+</section>
+
+<footer>
+  <div class="logo" style="font-size:16px;"><div class="logo-dot"></div>StreamFi</div>
+  <p style="font-size:11px;color:var(--muted);">MVP · Base Sepolia Testnet · Powered by Privy & Livepeer</p>
+  <div class="footer-links">
+    <a href="https://x.com/streamfiapp" target="_blank">Twitter/X</a>
+    <a href="https://discord.gg/KZzbwqtv" target="_blank">Discord</a>
+    <a href="https://t.me/StreamFi_App" target="_blank">Telegram</a>
+  </div>
+</footer>
+
